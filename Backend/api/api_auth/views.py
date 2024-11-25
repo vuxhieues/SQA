@@ -12,6 +12,7 @@ from authenticate import GenerateTokens, CustomTokenAuthentication, CustomRefres
 from django.template import loader
 from django.core.mail import send_mail
 from django.utils.html import strip_tags
+from permission import IsInstructor, IsStudent
 # Create your views here.
 
 class SignUpAsInstructorView(APIView):
@@ -23,7 +24,7 @@ class SignUpAsInstructorView(APIView):
         username = request.data.get("username", None)
         password = request.data.get("password", None)
         Bio = request.data.get("Bio", "")
-        SocialMedia = request.data.get("SocialMedia", "")
+        SocialMedia = request.data.getlist("SocialMedia[]", []) # shoulda altered in production
         image = request.FILES.get('image', None)
         if name is None or email is None or username is None or password is None:
             return Response({
@@ -54,6 +55,31 @@ class SignUpAsInstructorView(APIView):
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Instructor created successfully",}, status=status.HTTP_201_CREATED)
+# search in top instructor courses
+class GetStudentData(APIView):
+    authentication_classes = [CustomTokenAuthentication]
+    permission_classes = [IsInstructor]
+    def get(self, request, student_id):
+        query = """
+            SELECT Count(sc.CourseID) FROM Student_Course AS sc
+            INNER JOIN Course_Instructor AS ci ON sc.CourseID = ci.CourseID
+            WHERE sc.StudentID = %s AND ci.InstructorID = %s
+        """
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(query, (student_id, request.user['id']))
+                count = cursor.fetchone()[0]
+                if bool(count):
+                    cursor.execute("SELECT * FROM Student WHERE StudentID = %s", (student_id,))
+                    columns = [col[0] for col in cursor.description]
+                    rows = cursor.fetchall()
+                    student_data = dict(zip(columns, rows[0]))
+                    del student_data['password']
+                    return Response({"student_data": student_data}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"error": "Student is not enrolled in any of this instructor course"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 class SignUpAsStudentView(APIView):
     authentication_classes = []
     permission_classes = [AllowAny]
@@ -84,9 +110,9 @@ class SignUpAsStudentView(APIView):
                 upload_result = cloudinary.uploader.upload(image)
                 image_url = upload_result['secure_url']
                 query = """
-                    UPDATE instructor
+                    UPDATE Student
                     SET profilepic = %s
-                    WHERE instructorid = %s;
+                    WHERE studentid = %s;
                 """
                 print(image_url, student_id)
                 with connection.cursor() as cursor:

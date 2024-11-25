@@ -8,4 +8,4 @@ class IsInstructor(permissions.BasePermission):
 class IsStudent(permissions.BasePermission):
     def has_permission(self, request, view):
         # Check if the user is authenticated and their role is 'admin'
-        return request.user.role == 'student'
+        return request.auth == 'student'
