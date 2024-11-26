@@ -55,7 +55,6 @@ class SignUpAsInstructorView(APIView):
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Instructor created successfully",}, status=status.HTTP_201_CREATED)
-# search in top instructor courses
 class GetStudentData(APIView):
     authentication_classes = [CustomTokenAuthentication]
     permission_classes = [IsInstructor]
@@ -65,11 +64,18 @@ class GetStudentData(APIView):
             INNER JOIN Course_Instructor AS ci ON sc.CourseID = ci.CourseID
             WHERE sc.StudentID = %s AND ci.InstructorID = %s
         """
+        query1 = """
+            SELECT Count(sc.CourseID) FROM Student_Course AS sc
+            INNER JOIN Course AS c ON sc.CourseID = c.CourseID
+            WHERE sc.StudentID = %s AND c.TopInstructorID = %s
+        """
         try:
             with connection.cursor() as cursor:
                 cursor.execute(query, (student_id, request.user['id']))
-                count = cursor.fetchone()[0]
-                if bool(count):
+                count0 = cursor.fetchone()[0]
+                cursor.execute(query1, (student_id, request.user['id']))
+                count1 = cursor.fetchone()[0]
+                if bool(count0) or bool(count1):
                     cursor.execute("SELECT * FROM Student WHERE StudentID = %s", (student_id,))
                     columns = [col[0] for col in cursor.description]
                     rows = cursor.fetchall()

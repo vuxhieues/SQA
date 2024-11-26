@@ -150,8 +150,8 @@ class Migration(migrations.Migration):
 
                 CREATE TABLE Questions (
                     QuestionID BIGSERIAL PRIMARY KEY,
-                    QuizExamID INT REFERENCES QuizExam(QuizExamID),
-                    ContestExamID INT REFERENCES ContestExam(ContestExamID),
+                    QuizExamID INT REFERENCES QuizExam(QuizExamID) ON DELETE CASCADE,
+                    ContestExamID INT REFERENCES ContestExam(ContestExamID) ON DELETE CASCADE,
                     QuestionText TEXT NOT NULL,
                     Choices TEXT[],
                     CorrectAnswerIndex INT,
@@ -169,6 +169,7 @@ class Migration(migrations.Migration):
                     Description TEXT NOT NULL,
                     CourseSectionID INT REFERENCES CourseSection(CourseSectionID) ON DELETE CASCADE,
                     MaxMarks INT,
+                    PassingMarks INT,
                     FileAttched TEXT, -- link to file attached
                     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
@@ -189,7 +190,7 @@ class Migration(migrations.Migration):
                     Grade DECIMAL(5,2), -- Grade achieved on the assignment
                     Status AssignmentStatus DEFAULT 'pending',
                     SubmissionDate TIMESTAMP,
-                    PassFail BOOLEAN
+                    PassFail BOOLEAN -- true -> pass
                 );
 
                 CREATE TABLE Transactions (
