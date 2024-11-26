@@ -211,7 +211,7 @@ def create_contest(title, courseId, questions, quizDuration, totalMarks, passing
                 return Response({"error": "Invalid correct answer index"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    return True
+    return contestID
 def fetch_contests(course_id):
     query = """
         SELECT * FROM ContestExam WHERE CourseID = %s AND ContestExamID NOT IN (
@@ -437,7 +437,7 @@ def add_sections(sections, course_id, user_id):
                     "error": f"Video in section is missing"
                 }, status=status.HTTP_400_BAD_REQUEST) 
     return (sectionIDs, quiz_messages) 
-def fetch_top_instructor(section_id):
+def fetch_top_instructor_by_section(section_id):
     try:
         query = """
             SELECT c.TopInstructorID, c.CourseID
@@ -453,6 +453,57 @@ def fetch_top_instructor(section_id):
                 return (top_instructor_id, course_id)
             else:
                 return (None, None)
+    except Exception as e:
+        return (Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST), False)
+def fetch_top_instructor_by_course(course_id):
+    try:
+        query = """
+            SELECT TopInstructorID
+            FROM Course
+            WHERE CourseId = %s
+        """
+        with connection.cursor() as cursor:
+            cursor.execute(query, (course_id,))
+            result = cursor.fetchone()
+            if result:
+                top_instructor_id, course_id = result
+                return (top_instructor_id, course_id)
+            else:
+                return (None, None)
+    except Exception as e:
+        return (Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST), False)
+
+def fetch_assignment_for_whiteboard(whiteboard_items):
+    for whiteboard_item in whiteboard_items:
+        pass
+
+def fetch_instructor_for_whiteboard(whiteboard_items):
+    for whiteboard_item in whiteboard_items:
+        pass
+
+def fetch_quiz_for_whiteboard(whiteboard_items):
+    for whiteboard_item in whiteboard_items:
+        pass
+
+def fetch_contest_for_whiteboard(whiteboard_items):
+    for whiteboard_item in whiteboard_items:
+        pass
+
+def fetch_whiteboard(course_id):
+    query = """
+        SELECT wb.*
+        FROM InstructorWhiteBoard AS wb
+        INNER JOIN Course AS c
+        ON wb.CourseID = c.CourseID
+        WHERE c.CourseID = %s
+    """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query, (course_id,))
+            rows = cursor.fetchall()
+            columns = [col[0] for col in cursor.description]
+            whiteboard_items = [dict(zip(columns, row)) for row in rows]
+            return whiteboard_items
     except Exception as e:
         return (Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST), False)
 
@@ -715,7 +766,7 @@ class AddQuizView(APIView):
         passingMarks = request.data.get("passingMarks", None)
         if title is None or questions is None or quizDuration is None or totalMarks is None or passingMarks is None:
             return Response({"error": "smth is missing"}, status=status.HTTP_400_BAD_REQUEST)
-        (top_instructor_id, course_id) = fetch_top_instructor(sectionID)
+        (top_instructor_id, course_id) = fetch_top_instructor_by_section(sectionID)
         if isinstance(top_instructor_id, Response):
             return top_instructor_id
         if top_instructor_id is None:
@@ -735,7 +786,6 @@ class AddQuizView(APIView):
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Quiz Added"}, status=status.HTTP_200_OK)
-
 
 class AddInstructorToCourseView(APIView):
     authentication_classes = [CustomTokenAuthentication]
@@ -799,16 +849,32 @@ class AddAssignment(APIView):
         if isinstance(returned_value, Response):
             return returned_value
         assignmentID = returned_value
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT StudentID FROM Student_Course WHERE CourseID = %s", (courseID,))
-                studentsIDs = [row[0] for row in cursor.fetchall()]
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        for studentID in studentsIDs:
-            returned_value = add_assignment_to_student(studentID=studentID, assignmentID=assignmentID)
-            if isinstance(returned_value, Response):
-                return returned_value
+        (top_instructor_id, course_id) = fetch_top_instructor_by_course(course_id)
+        if isinstance(top_instructor_id, Response):
+            return top_instructor_id
+        if top_instructor_id is None:
+            return Response({"error": "smth wrong in data"}, status=status.HTTP_400_BAD_REQUEST)
+        if request.user['id'] == top_instructor_id:
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT StudentID FROM Student_Course WHERE CourseID = %s", (courseID,))
+                    studentsIDs = [row[0] for row in cursor.fetchall()]
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            for studentID in studentsIDs:
+                returned_value = add_assignment_to_student(studentID=studentID, assignmentID=assignmentID)
+                if isinstance(returned_value, Response):
+                    return returned_value
+        else:
+            query = """
+                INSERT INTO InstructorWhiteBoard (InstructorID, CourseID, AssignmentID, QuizExamID, ContestExamID)
+                VALUES (%s, %s, %s, %s, %s);
+            """
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, (request.user['id'], course_id, assignmentID, None, None))
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Assignment Added"}, status=status.HTTP_200_OK)
 class SubmitAssignmentView(APIView):
     authentication_classes = [CustomTokenAuthentication]
@@ -1016,7 +1082,39 @@ class MakeContest(APIView):
             passingMarks=passingMarks, user_id=request.user["id"])
         if isinstance(returned_value, Response):
             return returned_value
+        contest_id = returned_value
+        (top_instructor_id, course_id) = fetch_top_instructor_by_course(coureseId)
+        if isinstance(top_instructor_id, Response):
+            return top_instructor_id
+        if top_instructor_id is None:
+            return Response({"error": "smth wrong in data"}, status=status.HTTP_400_BAD_REQUEST)
+        if request.user['id'] != top_instructor_id:
+            query = """
+                INSERT INTO InstructorWhiteBoard (InstructorID, CourseID, AssignmentID, QuizExamID, ContestExamID)
+                VALUES (%s, %s, %s, %s, %s);
+            """
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, (request.user['id'], course_id, None, None, contest_id))
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Contest succesfully created"}, status=status.HTTP_200_OK)
+
+# ////////////////////////////// To Continue /////////////////////////////// #
+class GetCourseWhiteBoard(APIView):
+    authentication_classes = [CustomTokenAuthentication]
+    permission_classes = [IsInstructor]
+    def get(self, request, courseId):
+        if courseId is None:
+            return Response({"message": "Please provide course id"}, status=status.HTTP_400_BAD_REQUEST)
+        items = fetch_whiteboard(courseId)
+        if isinstance(items, Response):
+            return items
+        return Response({
+            "whiteboard": items
+        }, status=status.HTTP_200_OK)
+# ////////////////////////////// To Continue /////////////////////////////// #
+
 class DeleteContest(APIView):
     authentication_classes = [CustomTokenAuthentication]
     permission_classes = [IsInstructor]

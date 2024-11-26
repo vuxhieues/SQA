@@ -32,4 +32,5 @@ urlpatterns = [
     path("delete_video/<str:videoId>", DeleteVideoView.as_view()),
     path("delete_assignment/<str:assignmentId>", DeleteAssignmentView.as_view()),
     path("delete_quiz/<str:quizId>", DeleteQuizView.as_view()),
+    path("get_course_whiteboard/<str:courseId>", GetCourseWhiteBoard.as_view()),
 ]
