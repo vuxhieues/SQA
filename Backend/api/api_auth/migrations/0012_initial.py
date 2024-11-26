@@ -215,7 +215,7 @@ class Migration(migrations.Migration):
                     AssignmentID INT REFERENCES Assignment(AssignmentID) DEFAULT NULL,
                     QuizExamID INT REFERENCES QuizExam(QuizExamID) DEFAULT NULL,
                     ContestExamID INT REFERENCES ContestExam(ContestExamID) DEFAULT NULL,
-                    PRIMARY KEY (InstructorID, CourseID, AssignmentID),
+                    PRIMARY KEY (InstructorID, CourseID),
                     CHECK (
                         (QuizExamID IS NOT NULL AND ContestExamID IS NULL AND AssignmentID IS NULL) OR
                         (ContestExamID IS NOT NULL AND QuizExamID IS NULL AND AssignmentID IS NULL) OR
@@ -233,6 +233,7 @@ class Migration(migrations.Migration):
                         (CourseID IS NULL AND InstructorID IS NOT NULL)
                     )
                 );
+
             """
         )
     ]

@@ -214,7 +214,9 @@ def create_contest(title, courseId, questions, quizDuration, totalMarks, passing
     return True
 def fetch_contests(course_id):
     query = """
-        SELECT * FROM ContestExam WHERE CourseID = %s;
+        SELECT * FROM ContestExam WHERE CourseID = %s AND ContestExamID NOT IN (
+            SELECT ContestExamID FROM InstructorWhiteBoard
+        );;
     """
     try:
         with connection.cursor() as cursor:
@@ -251,6 +253,8 @@ def create_quiz(title, sectionID, questions, quizDuration, totalMarks, passingMa
                 return Response({"error": "Invalid correct answer index"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    return quizID
+    
 def create_assignment(title, description, sectionID, maxMarks, passingMarks, assignment_file):
     print(passingMarks)
     query = """
@@ -296,7 +300,9 @@ def fetch_assignments(sections):
                 with connection.cursor() as cursor:
                     cursor.execute("""
                         SELECT * FROM Assignment
-                        WHERE CourseSectionID = %s;
+                        WHERE CourseSectionID = %s AND AssignmentID NOT IN (
+                            SELECT AssignmentID FROM InstructorWhiteBoard
+                        );
                     """, (inner_section['coursesectionid'],))
                     section_rows = cursor.fetchall()
                     section_columns = [col[0] for col in cursor.description]
@@ -328,7 +334,9 @@ def fetch_quizzes(sections):
                 with connection.cursor() as cursor:
                     cursor.execute("""
                         SELECT * FROM QuizExam
-                        WHERE SectionID = %s;
+                        WHERE SectionID = %s AND QuizExamID NOT IN (
+                            SELECT QuizExamID FROM InstructorWhiteBoard
+                        );
                     """, (inner_section['coursesectionid'],))
                     section_rows = cursor.fetchall()
                     section_columns = [col[0] for col in cursor.description]
@@ -429,6 +437,24 @@ def add_sections(sections, course_id, user_id):
                     "error": f"Video in section is missing"
                 }, status=status.HTTP_400_BAD_REQUEST) 
     return (sectionIDs, quiz_messages) 
+def fetch_top_instructor(section_id):
+    try:
+        query = """
+            SELECT c.TopInstructorID, c.CourseID
+            FROM Course AS c INNER JOIN CourseSection AS cs
+            ON c.CourseID = cs.courseid
+            WHERE cs.CourseSectionId = %s
+        """
+        with connection.cursor() as cursor:
+            cursor.execute(query, (section_id,))
+            result = cursor.fetchone()
+            if result:
+                top_instructor_id, course_id = result
+                return (top_instructor_id, course_id)
+            else:
+                return (None, None)
+    except Exception as e:
+        return (Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST), False)
 
 class CreateCourseView(APIView):
     authentication_classes = [CustomTokenAuthentication]
@@ -520,7 +546,7 @@ class GetInstructorCourses(APIView):
             ON c.CourseID = ci.CourseID
             WHERE instructorid = %s
         """
-        returned_value = fetch_courses(query=non_top_instructor_query, id=request.user['id'])
+        returned_value = fetch_courses(query=non_top_instructor_query, param=request.user['id'])
         if isinstance(returned_value, Response):
             return returned_value
         non_top_instructor_courses = returned_value
@@ -689,11 +715,28 @@ class AddQuizView(APIView):
         passingMarks = request.data.get("passingMarks", None)
         if title is None or questions is None or quizDuration is None or totalMarks is None or passingMarks is None:
             return Response({"error": "smth is missing"}, status=status.HTTP_400_BAD_REQUEST)
+        (top_instructor_id, course_id) = fetch_top_instructor(sectionID)
+        if isinstance(top_instructor_id, Response):
+            return top_instructor_id
+        if top_instructor_id is None:
+            return Response({"error": "smth wrong in data"}, status=status.HTTP_400_BAD_REQUEST)
         returned_value = create_quiz(title=title, sectionID=sectionID, questions=questions, quizDuration=quizDuration, totalMarks=totalMarks,
             passingMarks=passingMarks, user_id=request.user["id"])
         if isinstance(returned_value, Response):
             return returned_value
+        if request.user['id'] != top_instructor_id:
+            query = """
+                INSERT INTO InstructorWhiteBoard (InstructorID, CourseID, AssignmentID, QuizExamID, ContestExamID)
+                VALUES (%s, %s, %s, %s, %s);
+            """
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, (request.user['id'], course_id, None, returned_value, None))
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Quiz Added"}, status=status.HTTP_200_OK)
+
+
 class AddInstructorToCourseView(APIView):
     authentication_classes = [CustomTokenAuthentication]
     permission_classes = [IsInstructor]
@@ -1059,3 +1102,9 @@ class GetSingleCourse(APIView):
         return Response({
             "course": course_data
         }, status=status.HTTP_200_OK)
+    
+
+
+
+
+
