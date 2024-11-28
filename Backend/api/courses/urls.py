@@ -27,10 +27,33 @@ urlpatterns = [
     path("get_categories", GetCategories.as_view()),
     path("search_by_title", SearchByTtitle.as_view()),
     path("search_by_categories", SearchByCategories.as_view()),
+    path("search_by_categories_and_title", SearchByTitleAndCategories.as_view()),
     path("delete_course/<str:courseId>", DeleteCourseView.as_view()),
     path("delete_section/<str:sectionId>", DeleteSectionView.as_view()),
     path("delete_video/<str:videoId>", DeleteVideoView.as_view()),
     path("delete_assignment/<str:assignmentId>", DeleteAssignmentView.as_view()),
     path("delete_quiz/<str:quizId>", DeleteQuizView.as_view()),
     path("get_course_whiteboard/<str:courseId>", GetCourseWhiteBoard.as_view()),
+    path("increase_student_balance/<str:amount>", IncreaseStudentBalanceView.as_view()),
+    path("get_transactions", GetUserTransactions.as_view()),
+    path("get_qa_messages/<str:qaid>", GetQAMessages.as_view()),
+    path("get_video_qa/<str:video_id>", GetVideoQA.as_view()),
+    path("accept_whiteboard_item", AcceptWhiteBoardItemView.as_view()),
+    path("reject_whiteboard_item", RejectWhiteBoardItemView.as_view()),
+
+    path("delete_qa", DeleteQAView.as_view()),
+    path("edit_message", EditMessage.as_view()),
+    path("delete_message", DeleteMessage.as_view()),
+
+    path("add_feedback_to_course", AddFeedbackReviewToCourseView.as_view()),
+    path("add_feedback_to_instructor", AddFeedbackReviewToInstructorView.as_view()),
+    path("edit_feedback", EditFeedBackView.as_view()),
+    path("delete_feedback/<str:review_id>", DeleteFeedbackView.as_view()),
+    path("get_feedbacks_for_course", GetFeedBackViewForCourseView.as_view()),
+    path("get_feedbacks_for_instructor", GetFeedBackViewForInstructorView.as_view()),
+
+
+    path("update_video_progress", UpdateStudentVideoProgress.as_view()),
+    path("get_course_statistics/<str:course_id>", GetCourseStatistics.as_view()),
+
 ]

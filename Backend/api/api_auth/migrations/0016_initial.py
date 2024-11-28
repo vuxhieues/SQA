@@ -85,11 +85,20 @@ class Migration(migrations.Migration):
                 );
 
                 CREATE TABLE Video (
-                    VideoID SERIAL PRIMARY KEY,
+                    VideoID BIGSERIAL PRIMARY KEY,
                     CourseSectionID INT REFERENCES CourseSection(CourseSectionID)
                         ON DELETE CASCADE NOT NULL,
                     VideoLink TEXT NOT NULL,
+                    VideoDuration INTERVAL NOT NULL DEFAULT INTERVAL '0',
                     Title VARCHAR(100) NOT NULL
+                );
+
+                CREATE TABLE Video_Student (
+                    VideoID INT REFERENCES Video(VideoID) ON DELETE CASCADE,
+                    StudentID INT REFERENCES Student(StudentID) ON DELETE CASCADE,
+                    VideoProgress DECIMAL(4,2) CHECK (VideoProgress >= 0 AND VideoProgress <= 100),
+                    CreatedAt TIMESTAMP Default CURRENT_TIMESTAMP,
+                    PRIMARY KEY (VideoID, StudentID)
                 );
 
                 CREATE TABLE QA (
@@ -175,11 +184,10 @@ class Migration(migrations.Migration):
                 );
 
                 CREATE TABLE CourseAnnouncements (
-                    AnnouncementID BIGSERIAL,
+                    AnnouncementID BIGSERIAL PRIMARY KEY,
                     AnnouncerID INT REFERENCES Instructor(InstructorID) ON DELETE SET NULL,
                     CourseID INT REFERENCES Course(CourseID) ON DELETE CASCADE NOT NULL,
-                    Announcement TEXT,
-                    PRIMARY KEY (AnnouncerID, CourseID)
+                    Announcement TEXT
                 );
 
                 CREATE TABLE Student_Assignment (
@@ -194,46 +202,46 @@ class Migration(migrations.Migration):
                 );
 
                 CREATE TABLE Transactions (
-                    TransactionID INT PRIMARY KEY,
+                    TransactionID BIGSERIAL PRIMARY KEY,
                     StudentID INT REFERENCES Student(StudentID),
                     InstructorID INT REFERENCES Instructor(InstructorID),
                     Amount DECIMAL(10,2),
                     ExecutedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
 
-                CREATE TABLE Statistics (
-                    CourseID INT REFERENCES Course(CourseID),
-                    InstructorID INT REFERENCES Instructor(InstructorID),
-                    StudentCount INT,
-                    CompletionRate DECIMAL(4,2),
-                    AverageGrades DECIMAL(10,2)
-                );
+                -- CREATE TABLE Statistics (
+                -- 	CourseID INT REFERENCES Course(CourseID),
+                -- 	InstructorID INT REFERENCES Instructor(InstructorID),
+                -- 	StudentCount INT,
+                -- 	CompletionRate DECIMAL(4,2),
+                -- 	AverageGrades DECIMAL(10,2)
+                -- );
 
                 CREATE TABLE InstructorWhiteBoard (
+                    InstructorWhiteBoardID BIGSERIAL PRIMARY KEY,
                     InstructorID INT REFERENCES Instructor(InstructorID),
                     CourseID INT REFERENCES Course(CourseID),
-                    AssignmentID INT REFERENCES Assignment(AssignmentID) DEFAULT NULL,
-                    QuizExamID INT REFERENCES QuizExam(QuizExamID) DEFAULT NULL,
-                    ContestExamID INT REFERENCES ContestExam(ContestExamID) DEFAULT NULL,
-                    PRIMARY KEY (InstructorID, CourseID),
+                    AssignmentID INT REFERENCES Assignment(AssignmentID) ON DELETE CASCADE,
+                    QuizExamID INT REFERENCES QuizExam(QuizExamID) ON DELETE CASCADE,
+                    ContestExamID INT REFERENCES ContestExam(ContestExamID) ON DELETE CASCADE,
                     CHECK (
                         (QuizExamID IS NOT NULL AND ContestExamID IS NULL AND AssignmentID IS NULL) OR
                         (ContestExamID IS NOT NULL AND QuizExamID IS NULL AND AssignmentID IS NULL) OR
                         (ContestExamID IS NULL AND QuizExamID IS NULL AND AssignmentID IS NOT NULL)
                     )
                 );
-
+                -- revise below table
                 CREATE TABLE FeedBack_Reviews (
                     ReviewID BIGSERIAL PRIMARY KEY,
                     CourseID INT REFERENCES Course(CourseID),
                     InstructorID INT REFERENCES Instructor(InstructorID),
+                    Rating DECIMAL(3,2),
                     Review TEXT,
                     CHECK (
                         (CourseID IS NOT NULL AND InstructorID IS NULL) OR
                         (CourseID IS NULL AND InstructorID IS NOT NULL)
                     )
                 );
-
             """
         )
     ]
