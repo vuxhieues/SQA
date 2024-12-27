@@ -22,23 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3gchw9tw3hsf)5+5o0)mi854b1&d_0$&m1sn_$!_c_xlz9zf+g'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-# ALLOWED_HOSTS = ['yomac.azurewebsites.net', '0321-197-52-187-28.ngrok-free.app', '127.0.0.1', 'localhost', '169.254.131.8']
-ALLOWED_HOSTS = ['*']
-
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api	
-cloudinary.config( 
-  	cloud_name = "dcdlgfd2w",
-  	api_key = "654874918542857",
-  	api_secret = "KmY-OONy-SrjBwoCRYID3pGounQ"
-)
-
 
 # Application definition
 
@@ -183,14 +169,7 @@ WSGI_APPLICATION = 'api.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'MwjhnPZMzcYCewmxiWHztuYfxupJVzsl',
-        'HOST': 'autorack.proxy.rlwy.net',  # External hostname
-        'PORT': '36131',                    # External port
-    }
+    
 }
 
 # Password validation
