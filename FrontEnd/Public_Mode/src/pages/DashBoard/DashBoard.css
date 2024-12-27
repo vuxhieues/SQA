@@ -1,0 +1,25 @@
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f8f8f8;
+}
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 40px;
+}
+.view-course-btn {
+  background-color: #fff;
+  color: #28a745;
+  border: 1px solid #28a745;
+  padding: 8px 15px;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.view-course-btn:hover {
+  background-color: #28a745;
+  color: #fff;
+}

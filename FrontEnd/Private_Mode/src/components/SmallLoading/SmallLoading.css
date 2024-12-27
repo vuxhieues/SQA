@@ -1,0 +1,58 @@
+.small-loader {
+  border: 4px solid rgba(0, 0, 0, .1);
+  border-left-color: transparent;
+  border-radius: 50%;
+}
+
+.small-loader {
+    border: 4px solid rgba(0, 0, 0, .1);
+    border-left-color: transparent;
+    width: 36px;
+    height: 36px;
+}
+
+.small-loader {
+    border: 3.5px solid rgba(0, 0, 0, .1);
+    border-left-color: transparent;
+    width: 25px;
+    height: 25px;
+    animation: spin89345 1s linear infinite;
+  }
+  
+@media (min-width: 640px) {
+  .small-loader {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (min-width: 768px) {
+  .small-loader {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .small-loader {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .small-loader {
+    width: 25px;
+    height: 25px;
+  }
+}
+  
+@keyframes spin89345 {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

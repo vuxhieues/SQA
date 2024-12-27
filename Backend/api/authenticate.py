@@ -56,7 +56,7 @@ class CustomTokenAuthentication(BaseAuthentication):
         
 class CustomRefreshAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        refresh = request.COOKIES.get("token", None)
+        refresh = request.headers.get("refresh", None)
         if refresh is None:
             raise AuthenticationFailed("refresh token is not provided")
         try:

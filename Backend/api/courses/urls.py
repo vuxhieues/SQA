@@ -5,6 +5,8 @@ urlpatterns = [
     path('create_course', CreateCourseView.as_view()),
     path('get_instructor_courses', GetInstructorCourses.as_view()),
     path('get_student_courses', GetStudentCourses.as_view()),
+    path('get_user_private_courses', GetUserPrivateCourses.as_view()),
+    path("get_student_data", GetStudentDataInCourseView.as_view()),
     path('enroll_student_to_course', StudentEnrollmentView.as_view()),
     path('ask_in_qa', AskInQAVideoView.as_view()),
     path('student_answers_in_qa', StudentAnswerInQAVideoView.as_view()),
@@ -16,10 +18,14 @@ urlpatterns = [
     path('grade_assignment', GradeAssignment.as_view()),
     path('get_single_course/<str:course_id>', GetSingleCourse.as_view()),
     path('get_quiz_exam/<str:quizID>', GetQuizExamView.as_view()),
+    path('get_contest_exam/<str:contestID>', GetContestExamView.as_view()),
     path("update_quiz", UpdateQuizView.as_view()),
-    path("update_assignment/<str:assignmentId>", UpdateAssignment.as_view()),
+    path("update_assignment", UpdateAssignment.as_view()),
     path("update_video", UpdateVideo.as_view()),
+    path("get_video/<str:video_id>", GetVideoView.as_view()),
     path("update_section", UpdateSectionView.as_view()),
+    path("update_course", UpdateCourse.as_view()),
+
     path("add_video", AddVideo.as_view()),
     path("add_section", AddSectionsView.as_view()),
     path("make_contest", MakeContest.as_view()),
@@ -37,23 +43,41 @@ urlpatterns = [
     path("increase_student_balance/<str:amount>", IncreaseStudentBalanceView.as_view()),
     path("get_transactions", GetUserTransactions.as_view()),
     path("get_qa_messages/<str:qaid>", GetQAMessages.as_view()),
+    path("fetch_categories", FetchCategoriesView.as_view()),
+
     path("get_video_qa/<str:video_id>", GetVideoQA.as_view()),
     path("accept_whiteboard_item", AcceptWhiteBoardItemView.as_view()),
     path("reject_whiteboard_item", RejectWhiteBoardItemView.as_view()),
 
-    path("delete_qa", DeleteQAView.as_view()),
+    path("delete_qa/<str:qaid>", DeleteQAView.as_view()),
     path("edit_message", EditMessage.as_view()),
     path("delete_message", DeleteMessage.as_view()),
+    
+    path("enroll_student_to_private_course/<str:course_id>", StudentEnrollmentInPrivateCourse.as_view()),
+    path("get_assignment/<str:assignmentId>", GetAssignmentView.as_view()),
+
+    path("get_course_assignments/<str:course_id>", GetCourseAssignmentsView.as_view()),
+    path("get_course_quizzes/<str:course_id>", GetCourseQuizzesView.as_view()),
+    path("get_course_contests/<str:course_id>", GetCourseContestsView.as_view()),
 
     path("add_feedback_to_course", AddFeedbackReviewToCourseView.as_view()),
     path("add_feedback_to_instructor", AddFeedbackReviewToInstructorView.as_view()),
     path("edit_feedback", EditFeedBackView.as_view()),
     path("delete_feedback/<str:review_id>", DeleteFeedbackView.as_view()),
-    path("get_feedbacks_for_course", GetFeedBackViewForCourseView.as_view()),
-    path("get_feedbacks_for_instructor", GetFeedBackViewForInstructorView.as_view()),
+    path("get_feedbacks_for_course/<str:course_id>", GetFeedBackViewForCourseView.as_view()),
+    path("get_feedbacks_for_instructor/<str:instructor_id>", GetFeedBackViewForInstructorView.as_view()),
 
+    path("make_announcement", MakeAnnouncementView.as_view()),
+    path("edit_announcement", UpdateAnnouncementView.as_view()),
+    path("delete_announcement", DeleteAnnouncementView.as_view()),
+    path("get_announcement/<str:course_id>", GetAnnouncementsView.as_view()),
 
     path("update_video_progress", UpdateStudentVideoProgress.as_view()),
     path("get_course_statistics/<str:course_id>", GetCourseStatistics.as_view()),
 
+    path("submit_quiz", SubmitQuizView.as_view()),
+    path("submit_contest", SubmitContestView.as_view()),
+
+    path("start_live_qa/<str:course_id>", StartLiveQASession.as_view()),
+    path("get_stats", GetAppStatsView.as_view()),
 ]

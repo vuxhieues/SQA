@@ -10,6 +10,7 @@ urlpatterns = [
     path("reset_password", ResetPasswordView.as_view()),
     path("forgot_password", ForgetPasswordView.as_view()),
     path("logout", LogoutView.as_view()),
-    path("get_student_data/<str:student_id>", GetStudentData.as_view()),
-    path("new_db", ChangeDB.as_view()),
+    path("get_user_data", GetUserProfileDataView.as_view()),
+    path("update_user_data", UpdateUserProfileDataView.as_view()),
+    path("get_instructor/<str:instructor_id>", GetInstructorDataView.as_view()),
 ]

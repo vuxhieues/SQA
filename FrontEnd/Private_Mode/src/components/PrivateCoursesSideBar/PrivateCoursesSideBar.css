@@ -1,0 +1,31 @@
+.private-course-sidebar>div::-webkit-scrollbar {
+    width: 3px;
+}
+  
+/* Track */
+.private-course-sidebar>div::-webkit-scrollbar-track {
+  background: transparent; 
+}
+   
+/* Handle */
+.private-course-sidebar>div::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+  
+/* Handle on hover */
+.private-course-sidebar>div::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.courses-view > div > ul {
+    display: grid;
+    grid-template-rows: 0fr;
+}
+
+.translattion-animation {
+    transform: translateX(-5rem);
+}
+
+.no-translattion-animation {
+    transform: translateX(0);
+}

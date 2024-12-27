@@ -1,0 +1,18 @@
+.course-data main .content::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.course-data main .content::-webkit-scrollbar-track {
+    background: transparent; 
+}
+ 
+/* Handle */
+.course-data main .content::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+
+/* Handle on hover */
+.course-data main .content::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}

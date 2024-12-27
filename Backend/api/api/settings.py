@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-3gchw9tw3hsf)5+5o0)mi854b1&d_0$&m1sn_$!_c_xlz9zf+g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['yomac.azurewebsites.net', '0321-197-52-187-28.ngrok-free.app', '127.0.0.1', 'localhost', '169.254.131.8']
+ALLOWED_HOSTS = ['*']
 
 import cloudinary
 import cloudinary.uploader
@@ -38,9 +39,11 @@ cloudinary.config(
   	api_secret = "KmY-OONy-SrjBwoCRYID3pGounQ"
 )
 
+
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,19 +52,65 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api_auth',
     'courses',
+    # 'liveQA',
+    'chat',
     'cloudinary',
+    'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'channels',
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow all headers
+CORS_ALLOW_HEADERS = [
+    'Authorization',
+    'Content-Type',
+    'X-Requested-With',
+    'token',  # Add custom headers like 'token'
+    'refresh'
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://yomac-private-klli.vercel.app',
+    'https://yomac-public-7m6c.vercel.app'
+]
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'http://localhost:5174', 'https://yomac-private-klli.vercel.app', 'https://yomac-public-7m6c.vercel.app']
+
+CSRF_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
+
+ASGI_APPLICATION = 'api.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=25),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=90),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=90),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
+
+    'AUTH_COOKIE_HTTP_ONLY': True,
+    'AUTH_COOKIE_SECURE': False,
+    'AUTH_COOKIE_SAMESITE': 'Lax',
 
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
@@ -101,7 +150,8 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -142,7 +192,6 @@ DATABASES = {
         'PORT': '36131',                    # External port
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -188,14 +237,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-GOOGLE_SERVICE_ACCOUNT_FILE = 'service_account.json'
-GOOGLE_DRIVE_PARENT_FOLDER_ID = '145G3TvtMq8skKakhm9t5NZper5QIpalv'
-GOOGLE_DRIVE_SCOPES = ['https://www.googleapis.com/auth/drive.file']
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'mbahgat503@gmail.com'
-EMAIL_HOST_PASSWORD = 'tghf uexm xtlk pczr'  # Replace with your actual email password or app-specific password
-DEFAULT_FROM_EMAIL = 'mbahgat503@gmail.com'
