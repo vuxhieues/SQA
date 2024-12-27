@@ -53,3 +53,8 @@ Add badges from somewhere like: [shields.io](https://shields.io/)
 - [@Youssefwafa7](https://github.com/Youssefwafa7)
 - [@OmarHassan2003](https://github.com/OmarHassan2003)
 - [@Abdallah-farag27](https://github.com/Abdallah-farag27)
+
+## Public Mode Repository
+
+The public mode of the project, developed by my team, can be found here:  
+[Public Mode Repository](https://github.com/OmarHassan2003/YOMAC)
