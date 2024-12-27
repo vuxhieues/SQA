@@ -1,4 +1,4 @@
-# **YOMAC - Your Online Mastery and Collaboration Platform**  
+# **YOMAC**  
 
 YOMAC is an innovative e-learning web application designed to enhance the learning experience for both educators and students. With YOMAC, users can create, manage, and engage with educational content seamlessly, offering features that cater to diverse learning needs.  
 
