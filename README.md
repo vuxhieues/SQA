@@ -36,3 +36,20 @@ I played a primary role in building YOMAC, handling both backend and some fronte
 YOMAC bridges the gap between traditional and modern learning by empowering educators to create meaningful content and students to access knowledge in a structured, interactive, and inclusive manner. Whether it’s open collaboration through public courses or focused learning via private courses, YOMAC adapts to your educational needs.  
 
 **YOMAC - Redefining the future of learning, one course at a time.**  
+
+
+## Badges
+
+Add badges from somewhere like: [shields.io](https://shields.io/)
+
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
+[![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
+
+
+## Authors
+
+- [@MoBahgat010](https://github.com/MoBahgat010)
+- [@Youssefwafa7](https://github.com/Youssefwafa7)
+- [@OmarHassan2003](https://github.com/OmarHassan2003)
+- [@Abdallah-farag27](https://github.com/Abdallah-farag27)
