@@ -4,8 +4,15 @@ YOMAC is an innovative e-learning web application designed to enhance the learni
 
 ### **Key Features**  
 
-1. **Comprehensive Content Management:**  
-   - Perform full CRUD operations for **Courses**, **Course Sections**, **Quizzes**, **Contests**, **Assignments**, and a **Real-Time LiveQA** chat session ensuring a flexible and interactive learning environment.  
+1. **Backend-Driven Comprehensive Content Management for a Collaborative Learning and Tracking Environment:**  
+
+   - **Top Instructor Privileges:** At the core of the system is a powerful backend infrastructure that empowers each **Top Instructor** with full control over their course content. They can seamlessly perform CRUD (Create, Read, Update, Delete) operations on **Courses**, **Course Sections**, **Quizzes**, **Contests**, **Assignments**, and **a LiveQA chat session for course**. This backend architecture ensures courses are structured, updated, and managed efficiently, maintaining high-quality standards across the platform.  
+
+   - **Collaborative Teaching with Controlled Access:** The backend system supports role-based access management, allowing Top Instructors to add other instructors to assist in course management. These assisting instructors (non-Top Instructors) operate under predefined restrictions enforced by the backend. For instance, they can propose **quizzes**, **assignments**, and **contests**, but the backend ensures that these proposals are routed to the Top Instructor for approval or rejection. This process is automated and securely handled in the backend to maintain course consistency and quality.  
+
+   - **Interactive Video-Based Q&A:** Under each video, a **Q&A section** is available. Students can post their questions, and the system organizes them by timestamps, relevance, or popularity. Responses from instructors and fellow students are also processed and stored in the backend, allowing learners to revisit these discussions anytime. This static Q&A system complements the **Real-Time LiveQA** feature, providing a well-rounded learning experience.  
+
+   - **Student Progress Tracking and Analytics:** The backend tracks every aspect of a student's journey through the course, including completed sections, quiz scores, submitted assignments, and engagement with the Q&A sections. This data is processed to generate detailed **progress reports and statistical insights**, which are accessible to both students and instructors. The backend also supports data visualization and performance metrics, giving a clear understanding of individual progress and overall course impact.
 
 2. **Two Types of Courses:**  
    - **Public Courses:**  
@@ -16,7 +23,7 @@ YOMAC is an innovative e-learning web application designed to enhance the learni
 3. **Private Course Extensions:**  
    - Includes all the features of public courses, with additional advanced tools:  
      - **Real-Time Chat:** Students and instructors can engage in discussions with auto-saved messages for uninterrupted communication.  
-     - **Livestream Integration:** Host live sessions for lectures, Q&A, or collaborative discussions, bringing an interactive touch to virtual learning.
+     - **Livestream Integration:** Host live sessions for lectures, Q&A, or collaborative discussions, bringing an interactive touch to virtual learning using *WebRTC* technology.
      - **Announcemnts:** Course Instructors can make announcemnts for the enrolled students.
 
 4. **User-Centric Design:**  
