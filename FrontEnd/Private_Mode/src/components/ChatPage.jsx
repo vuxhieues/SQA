@@ -18,7 +18,7 @@ function ChatPage(props) {
       console.log(token);
       
       if(token) {
-        const ws = new WebSocket(`wss://yomac.azurewebsites.net/ws/chat/private_chat/${props.room.chatid}?token=${token}`); // Replace with your WebSocket server URL
+        const ws = new WebSocket(`wss://${process.env.REACT_APP_BASE_URL}/ws/chat/private_chat/${props.room.chatid}?token=${token}`); // Replace with your WebSocket server URL
         
         // Set up WebSocket event listeners
         ws.onopen = () => {

@@ -88,7 +88,7 @@ export const EditAnnouncement = createAsyncThunk("AnnouncementSlice/editAnnounce
 export const GetChats = createAsyncThunk("AnnouncementSlice/getChats", async (course_id, { getState, rejectWithValue }) => {
     const { token } = getState().Authorization;
     try {
-        const response = await axios.get('https://yomac.azurewebsites.net/api/chat/get_chat_rooms/' + course_id, {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/chat/get_chat_rooms/` + course_id, {
             headers: {
               'token': token,
               'Content-Type': 'application/json',
