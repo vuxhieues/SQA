@@ -1,6 +1,6 @@
 import pytest
 from django.db import connection
-from courses.views import update_quiz
+from api.courses.views import update_quiz
 
 @pytest.mark.django_db
 def test_update_quiz():
