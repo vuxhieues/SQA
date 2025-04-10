@@ -437,6 +437,7 @@ def fetch_course_quizzes(sections, role, id):
         sections = fetch_quizzes_overview(sections)
     return sections
 def fetch_course_contests(course_id, role, id):
+    contests = []  # Khởi tạo contests là một danh sách rỗng
     if role == "student":
         contests = fetch_student_contests_in_course(course_id, id)
     elif role == "instructor":
@@ -1091,9 +1092,18 @@ def get_review_student_id(review_id):
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 def get_instructor_courses(instructor_id, private=False):
+    # Kiểm tra instructor có tồn tại không
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT InstructorID FROM Instructor WHERE InstructorID = %s", (instructor_id,))
+            if not cursor.fetchone():
+                return Response({"error": "Instructor not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
     top_instructor_query = "SELECT * FROM course WHERE topinstructorid = %s ORDER BY CourseID ASC"
     if private:
-        top_instructor_query = "SELECT * FROM course WHERE topinstructorid = %s WHERE SeenStatus = 'private' ORDER BY CourseID ASC"
+        top_instructor_query = "SELECT * FROM course WHERE topinstructorid = %s AND SeenStatus = 'private' ORDER BY CourseID ASC"
     returned_value = fetch_raw_courses(query=top_instructor_query, param=instructor_id)
     if isinstance(returned_value, Response):
         return returned_value
